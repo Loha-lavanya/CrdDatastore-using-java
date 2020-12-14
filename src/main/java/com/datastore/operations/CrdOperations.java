@@ -53,7 +53,7 @@ public class CrdOperations {
 
 	// Creating Json object
 	@RequestMapping(path="/createData",produces= {"application/json"})
-	public String createJson(@RequestBody Data data) throws CustomException,JsonGenerationException, JsonMappingException, IOException {
+	public String createData(@RequestBody Data data) throws CustomException,JsonGenerationException, JsonMappingException, IOException {
 
 		//check whether json object greater than 16Kb
 		Instrumentation instrumentation;
