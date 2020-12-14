@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
-public class CrudOperations {
+public class CrdOperations {
 
 
 	//Check whether file already contains that object
@@ -87,8 +87,8 @@ public class CrudOperations {
 		}
 	}
 
-	@GetMapping("readJson/{key}")
-	public  Data readJSON(@PathVariable(value="key") String key) throws JsonParseException, JsonMappingException, IOException, CustomException
+	@GetMapping("readData/{key}")
+	public  Data readData(@PathVariable(value="key") String key) throws JsonParseException, JsonMappingException, IOException, CustomException
 	{ 
 		if(key.length()>32)
 			throw new CustomException("Key should not be exceed 32 characters");
@@ -110,8 +110,8 @@ public class CrudOperations {
 	}
 
 
-	@DeleteMapping("deleteJson/{key}")
-	public void deleteJSON(@PathVariable(value="key") String key) 
+	@DeleteMapping("deleteData/{key}")
+	public void deleteData(@PathVariable(value="key") String key) 
 	{
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonNode = objectMapper.readTree(new File("data.json"));
