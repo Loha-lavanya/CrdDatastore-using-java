@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
-public class DataController {
+public class CrudOperations {
 
 
 	//Check whether file already contains that object
