@@ -26,12 +26,18 @@ public class CrdOperations {
 	//Check whether file already contains that object
 	public boolean isExist(String key) throws ParseException, FileNotFoundException
 	{
-		Scanner scanner = new Scanner(new File("data.json"));
-		while (scanner.hasNext())
-		{
-			JSONObject obj = (JSONObject) new JSONParser().parse(scanner.next());
-			if(obj.get("key").equals(key))
-				return true;
+		try (FileInputStream f = new FileInputStream("data.json")) {
+
+			JsonFactory jf = new JsonFactory();
+			JsonParser jp = jf.createParser(f);
+			jp.setCodec(new ObjectMapper());
+			jp.nextToken();
+			while (jp.hasCurrentToken()) {
+				Data data = jp.readValueAs(Data.class);
+				jp.nextToken();
+				if (data.getKey().equals(key))
+					return true;
+			}
 		}
 		return false;
 	}
@@ -62,7 +68,7 @@ public class CrdOperations {
 
 		//check whether file size greater than 1Gb
 		String filename="data.json";
-		if(Files.size(filename)>1024*1024*1024)
+		if(new File(filename).length() > 1024 * 1024 * 1024)
 			throw new CustomException("File should not be greater than 1GB");
 
 		if(isExist(data.getKey()))
@@ -113,14 +119,24 @@ public class CrdOperations {
 	@DeleteMapping("deleteData/{key}")
 	public void deleteData(@PathVariable(value="key") String key) 
 	{
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = objectMapper.readTree(new File("data.json"));
-		for (JsonNode node : jsonNode) {
-			if(node.get("key").equals(key)) {
-				((ObjectNode)node).remove("key");
-				((ObjectNode)node).remove("value");
+		String filename = "data.json";
+		List<String> jsonArray = new ArrayList<>();
+		try (FileInputStream f = new FileInputStream(filename)) {
+			JsonFactory jf = new JsonFactory();
+			JsonParser jp = jf.createParser(f);
+			jp.setCodec(new ObjectMapper());
+			jp.nextToken();
+			while (jp.hasCurrentToken()) {
+				Data data = jp.readValueAs(Data.class);
+				jp.nextToken();
+				if (!data.getKey().equals(key))
+					jsonArray.add(new ObjectMapper().writeValueAsString(data));
 			}
+			new FileOutputStream(filename).close();
+			for (int i = 0; i < jsonArray.size();i++)
+				 fileWrite(jsonArray.get(i), filename);
+
 		}
-		objectMapper.writeValue(new File("data.json"), jsonNode);
+		return "deleted!";
 	}
 }	
